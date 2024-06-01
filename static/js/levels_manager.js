@@ -1,14 +1,22 @@
+import GameObjects from './game_objects.js';
+
 class LevelsManager {
     constructor(scene, world) {
         this.scene = scene;
         this.world = world;
         this.objects = [];
+        console.log("LevelsManager constructor completed");
     }
 
     loadLevel(url) {
+        console.log(`Loading level from URL: ${url}`);
         fetch(url)
-            .then(response => response.json())
+            .then(response => {
+                console.log("Fetch response received");
+                return response.json();
+            })
             .then(data => {
+                console.log("Data loaded from URL:", data);
                 data.objects.forEach(obj => {
                     this.addObjectToScene(obj);
                 });
@@ -20,26 +28,20 @@ class LevelsManager {
     }
 
     addObjectToScene(obj) {
-        let geometry, material, mesh, shape, body;
-
-        if (obj.type === 'cube') {
-            geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
-            shape = new CANNON.Box(new CANNON.Vec3(obj.size[0] / 2, obj.size[1] / 2, obj.size[2] / 2));
-            material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
-        } else if (obj.type === 'sphere') {
-            geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
-            shape = new CANNON.Sphere(obj.size[0]);
-            material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
-        } else {
+        console.log(`Adding object to scene: ${obj.name}`);
+        if (!GameObjects[obj.type]) {
             console.warn(`Unknown object type: ${obj.type}`);
             return;
         }
 
-        mesh = new THREE.Mesh(geometry, material);
+        const { geometry, shape, material } = GameObjects[obj.type].create(obj);
+        console.log(`Creating object: ${obj.name} of type: ${obj.type}`);
+
+        const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(...obj.position);
         console.log(`Mesh created for ${obj.type} at position:`, mesh.position);
 
-        body = new CANNON.Body({ mass: obj.mass || 1, shape });
+        const body = new CANNON.Body({ mass: obj.mass || 1, shape });
         body.position.set(...obj.position);
         this.world.addBody(body);
         console.log(`Body created for ${obj.type} at position:`, body.position);
@@ -56,3 +58,5 @@ class LevelsManager {
         });
     }
 }
+
+export default LevelsManager;

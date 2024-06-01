@@ -53,7 +53,7 @@ class ControlsManager {
     }
 
     updateCamera() {
-        const speed = 10;
+        const speed = 2;
         const direction = new THREE.Vector3();
 
         if (this.keys.w) {
@@ -78,3 +78,5 @@ class ControlsManager {
         this.camera.position.add(direction.applyQuaternion(this.camera.quaternion));
     }
 }
+
+export default ControlsManager;

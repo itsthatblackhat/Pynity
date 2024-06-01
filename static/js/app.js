@@ -1,3 +1,6 @@
+import LevelsManager from './levels_manager.js';
+import PlayerManager from './player_manager.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
 
@@ -10,32 +13,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const scene = new THREE.Scene();
     console.log("Scene initialized");
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 5);
-    console.log("Camera initialized at position:", camera.position);
-
-    const controlsManager = new ControlsManager(camera);
-    console.log("Controls manager initialized");
-
-    // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040, 2);
-    scene.add(ambientLight);
-    console.log("Ambient light added");
-
-    // Initialize physics world
     const world = new CANNON.World();
     world.gravity.set(0, -9.82, 0);
     console.log("Physics world initialized");
 
+    const playerManager = new PlayerManager(scene, world, [0, 5, 10]);
+    const camera = playerManager.getCamera();
+    console.log("PlayerManager initialized");
+
     const levelsManager = new LevelsManager(scene, world);
+    console.log("LevelsManager created");
     levelsManager.loadLevel('/api/universe');
-    console.log("Levels manager initialized and universe loaded");
+    console.log("LevelsManager initialized and level loaded");
+
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+    console.log("Ambient light added");
 
     function animate() {
         requestAnimationFrame(animate);
         world.step(1 / 60);
         levelsManager.animate();
-        controlsManager.updateCamera();
+        playerManager.update();
         renderer.render(scene, camera);
         console.log("Rendering frame");
     }

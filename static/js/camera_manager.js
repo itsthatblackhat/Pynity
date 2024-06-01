@@ -9,3 +9,5 @@ class CameraManager {
         return this.camera;
     }
 }
+
+export default CameraManager;
