@@ -1,6 +1,7 @@
 class ControlsManager {
-    constructor(camera) {
+    constructor(camera, playerBody) {
         this.camera = camera;
+        this.playerBody = playerBody;
         this.keys = {
             w: false,
             s: false,
@@ -12,7 +13,7 @@ class ControlsManager {
         this.mouseDown = false;
         this.mouseX = 0;
         this.mouseY = 0;
-
+        this.jumpInProgress = false;
         this.initEventListeners();
     }
 
@@ -68,14 +69,24 @@ class ControlsManager {
         if (this.keys.d) {
             direction.x += speed;
         }
-        if (this.keys.space) {
-            direction.y += speed;
-        }
-        if (this.keys.c) {
-            direction.y -= speed;
+        if (this.keys.space && !this.jumpInProgress) {
+            this.jump();
         }
 
-        this.camera.position.add(direction.applyQuaternion(this.camera.quaternion));
+        this.playerBody.velocity.x += direction.x * 0.1;
+        this.playerBody.velocity.z += direction.z * 0.1;
+
+        this.camera.position.copy(this.playerBody.position);
+    }
+
+    jump() {
+        if (this.playerBody.position.y <= 1.1) { // Check if player is on the ground
+            this.jumpInProgress = true;
+            this.playerBody.velocity.y = 5; // Jump strength
+            setTimeout(() => {
+                this.jumpInProgress = false;
+            }, 500); // Adjust the duration as needed
+        }
     }
 }
 

@@ -5,7 +5,7 @@ class SpawningManager {
     }
 
     spawnPlayer(position) {
-        this.playerManager.camera.position.set(...position);
+        this.playerManager.body.position.set(...position);
         console.log("Player spawned at position:", position);
     }
 

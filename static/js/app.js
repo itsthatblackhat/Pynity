@@ -1,5 +1,6 @@
 import LevelsManager from './levels_manager.js';
 import PlayerManager from './player_manager.js';
+import SpawningManager from './spawning_manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
@@ -25,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("LevelsManager created");
     levelsManager.loadLevel('/api/universe');
     console.log("LevelsManager initialized and level loaded");
+
+    const spawningManager = new SpawningManager(levelsManager, playerManager);
+    spawningManager.spawnPlayer([0, 5, 10]);
+    console.log("SpawningManager initialized and player spawned");
 
     const ambientLight = new THREE.AmbientLight(0x404040);
     scene.add(ambientLight);
