@@ -1,32 +1,39 @@
-const GameObjects = {
-    cube: {
-        create: (obj) => {
-            console.log(`Creating cube: ${obj.name}`);
-            const geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
-            const shape = new CANNON.Box(new CANNON.Vec3(obj.size[0] / 2, obj.size[1] / 2, obj.size[2] / 2));
-            const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
-            return { geometry, shape, material };
+class GameObjects {
+    static createObject(scene, world, obj) {
+        let geometry, material, mesh, shape, body;
+
+        if (obj.type === 'cube') {
+            geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
+            shape = new CANNON.Box(new CANNON.Vec3(obj.size[0] / 2, obj.size[1] / 2, obj.size[2] / 2));
+        } else if (obj.type === 'sphere') {
+            geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
+            shape = new CANNON.Sphere(obj.size[0]);
+        } else if (obj.type === 'ground') {
+            geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
+            shape = new CANNON.Box(new CANNON.Vec3(obj.size[0] / 2, obj.size[1] / 2, obj.size[2] / 2));
         }
-    },
-    sphere: {
-        create: (obj) => {
-            console.log(`Creating sphere: ${obj.name}`);
-            const geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
-            const shape = new CANNON.Sphere(obj.size[0]);
-            const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
-            return { geometry, shape, material };
+
+        material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(...obj.position);
+        scene.add(mesh);
+
+        if (obj.collision !== false) {
+            body = new CANNON.Body({ mass: obj.mass, shape });
+            body.position.set(...obj.position);
+
+            if (obj.fixed) {
+                body.mass = 0; // Make the body static by setting its mass to 0
+                body.updateMassProperties(); // Ensure the mass properties are updated
+                body.type = CANNON.Body.STATIC; // Explicitly set the body type to STATIC
+            }
+
+            world.addBody(body);
+            mesh.userData.physicsBody = body; // Link the Three.js mesh to the Cannon.js body
         }
-    },
-    ground: {
-        create: (obj) => {
-            console.log(`Creating ground: ${obj.name}`);
-            const geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
-            const shape = new CANNON.Box(new CANNON.Vec3(obj.size[0] / 2, obj.size[1] / 2, obj.size[2] / 2));
-            const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
-            return { geometry, shape, material };
-        }
-    },
-    // Add more object types as needed
-};
+
+        return { mesh, body };
+    }
+}
 
 export default GameObjects;

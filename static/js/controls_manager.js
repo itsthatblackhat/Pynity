@@ -1,19 +1,25 @@
+import PlayerPhysics from './player_physics.js';
+
 class ControlsManager {
     constructor(camera, playerBody) {
         this.camera = camera;
         this.playerBody = playerBody;
+        this.playerPhysics = new PlayerPhysics(playerBody);
         this.keys = {
             w: false,
             s: false,
             a: false,
             d: false,
             space: false,
-            c: false
+            c: false,
+            q: false,
+            e: false
         };
         this.mouseDown = false;
         this.mouseX = 0;
         this.mouseY = 0;
-        this.jumpInProgress = false;
+        this.pitch = 0;
+        this.yaw = 0;
         this.initEventListeners();
     }
 
@@ -47,46 +53,29 @@ class ControlsManager {
                 this.mouseX = event.clientX;
                 this.mouseY = event.clientY;
 
-                this.camera.rotation.y -= deltaX * 0.002;
-                this.camera.rotation.x -= deltaY * 0.002;
+                this.yaw -= deltaX * 0.002;
+                this.pitch -= deltaY * 0.002;
+
+                // Clamp the pitch value to avoid flipping
+                this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
             }
         });
     }
 
     updateCamera() {
-        const speed = 2;
-        const direction = new THREE.Vector3();
+        this.playerPhysics.updateMovement(this.keys, this.camera);
 
-        if (this.keys.w) {
-            direction.z -= speed;
+        // Apply rotation for Q and E keys
+        if (this.keys.q) {
+            this.yaw += 0.05;
         }
-        if (this.keys.s) {
-            direction.z += speed;
-        }
-        if (this.keys.a) {
-            direction.x -= speed;
-        }
-        if (this.keys.d) {
-            direction.x += speed;
-        }
-        if (this.keys.space && !this.jumpInProgress) {
-            this.jump();
+        if (this.keys.e) {
+            this.yaw -= 0.05;
         }
 
-        this.playerBody.velocity.x += direction.x * 0.1;
-        this.playerBody.velocity.z += direction.z * 0.1;
-
+        this.camera.rotation.order = 'YXZ'; // Order of rotations: yaw (Y), pitch (X), roll (Z)
+        this.camera.rotation.set(this.pitch, this.yaw, 0);
         this.camera.position.copy(this.playerBody.position);
-    }
-
-    jump() {
-        if (this.playerBody.position.y <= 1.1) { // Check if player is on the ground
-            this.jumpInProgress = true;
-            this.playerBody.velocity.y = 5; // Jump strength
-            setTimeout(() => {
-                this.jumpInProgress = false;
-            }, 500); // Adjust the duration as needed
-        }
     }
 }
 

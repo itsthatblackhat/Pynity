@@ -11,7 +11,7 @@ class PlayerManager {
 
         // Create a physical body for the player
         const playerShape = new CANNON.Sphere(1.0);
-        this.body = new CANNON.Body({ mass: 1 });
+        this.body = new CANNON.Body({ mass: 50 }); // Adjust mass for realistic falling speed
         this.body.addShape(playerShape);
         this.body.position.set(...initialPosition);
         this.body.fixedRotation = true; // Prevent player from rotating due to physics interactions
