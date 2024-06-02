@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pynity Editor</title>
     <link rel="stylesheet" href="static/css/styles.css">
-    <script type="module" src="static/js/three.js"></script>
     <script type="module" src="static/js/three.module.js"></script>
-    <script type="module" src="static/js/TransformControls.js"></script>
+    <script type="module" src="static/js/three.js"></script>
     <script type="module" src="static/js/TransformControls.js"></script>
     <script type="module" src="static/js/editor_combined_manager.js"></script>
 </head>
@@ -77,29 +76,24 @@
                 requestAnimationFrame(animate);
                 controlsManager.updateCamera();
                 renderer.render(scene, camera);
-                console.log('Scene rendered');
             }
 
             animate();
 
             document.getElementById('saveBtn').addEventListener('click', () => {
                 console.log('Save button clicked');
-                // Implement save logic
             });
 
             document.getElementById('loadBtn').addEventListener('click', () => {
                 console.log('Load button clicked');
-                // Implement load logic
             });
 
             document.getElementById('addCubeBtn').addEventListener('click', () => {
                 console.log('Add Cube button clicked');
-                // Implement add cube logic
             });
 
             document.getElementById('addSphereBtn').addEventListener('click', () => {
                 console.log('Add Sphere button clicked');
-                // Implement add sphere logic
             });
 
             document.getElementById('toggleEditModeBtn').addEventListener('click', () => {

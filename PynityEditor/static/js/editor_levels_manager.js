@@ -34,9 +34,8 @@ export class EditorLevelsManager {
         }
     }
 
-        onObjectClick(event) {
+    onObjectClick(event) {
         if (!this.editMode) return;
-
         const rect = this.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2(
             ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -46,38 +45,78 @@ export class EditorLevelsManager {
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, this.camera);
 
-        // Filter objects to only those with 'layers' property
-        const objectsWithLayers = this.objects.filter(obj => obj.layers);
-        const intersects = raycaster.intersectObjects(objectsWithLayers);
+        console.log('Mouse position:', mouse);
+
+        const intersects = raycaster.intersectObjects(this.objects, true).filter(obj => obj.object && obj.object.layers);
+
+        console.log('Intersects:', intersects);
 
         if (intersects.length > 0) {
             const object = intersects[0].object;
+            console.log('Object clicked:', object);
+            console.log('Object properties:', object);
+            console.log('Object layers:', object.layers);
             this.transformControls.attach(object);
+        } else {
+            console.log('No objects intersected');
         }
     }
 
     addObject(obj) {
         let geometry, material, mesh;
-        if (obj.type === 'cube') {
-            geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
-            material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
-            mesh = new THREE.Mesh(geometry, material);
-        } else if (obj.type === 'sphere') {
-            geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
-            material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
-            mesh = new THREE.Mesh(geometry, material);
-        }
 
-        if (mesh) {
-            mesh.position.set(...obj.position);
-            this.scene.add(mesh);
-            this.objects.push(mesh);
-            console.log(`Added ${obj.type} at position: ${mesh.position.x}, ${mesh.position.y}, ${mesh.position.z}`);
+        try {
+            if (obj.type === 'cube') {
+                geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
+                material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
+                mesh = new THREE.Mesh(geometry, material);
+            } else if (obj.type === 'sphere') {
+                geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
+                material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
+                mesh = new THREE.Mesh(geometry, material);
+            } else if (obj.type === 'ground') {
+                geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
+                material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
+                mesh = new THREE.Mesh(geometry, material);
+            } else {
+                console.error('Unsupported object type:', obj.type);
+                return;
+            }
+
+            if (mesh) {
+                mesh.position.set(...obj.position);
+                this.scene.add(mesh);
+                console.log(`Added ${obj.type} at position: ${mesh.position.x}, ${mesh.position.y}, ${mesh.position.z}`);
+
+                if (!mesh.layers) {
+                    mesh.layers = new THREE.Layers();
+                    console.log('Layers property added:', mesh.layers);
+                }
+
+                mesh.layers.enableAll();
+                this.objects.push(mesh);
+                console.log('Layers property:', mesh.layers);
+            } else {
+                console.error('Failed to create mesh for object:', obj);
+            }
+        } catch (error) {
+            console.error('Error in addObject method:', error);
         }
     }
 
     loadLevelData(levelData) {
-        levelData.objects.forEach(obj => this.addObject(obj));
+        try {
+            if (Array.isArray(levelData.objects)) {
+                levelData.objects.forEach(obj => {
+                    console.log('Loading object:', obj);
+                    this.addObject(obj);
+                });
+            } else {
+                console.error('Level data is not in expected format:', levelData);
+            }
+        } catch (error) {
+            console.error('Error in loadLevelData method:', error);
+        }
     }
 
     toggleEditMode() {

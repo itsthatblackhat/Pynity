@@ -88,7 +88,6 @@ export class EditorLevelsManager {
     constructor(scene, camera, renderer) {
         this.scene = scene;
         this.transformControls = null;
-
         this.camera = camera;
         this.renderer = renderer;
         this.objects = [];
@@ -156,22 +155,28 @@ export class EditorLevelsManager {
             geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
+        } else if (obj.type === 'ground') {
+            geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
+            material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
+            mesh = new THREE.Mesh(geometry, material);
+        } else {
+            console.error('Unsupported object type:', obj.type);
+            return;
         }
 
-        if (mesh) {
-            mesh.position.set(...obj.position);
-            this.scene.add(mesh);
-            console.log(`Added ${obj.type} at position: ${mesh.position.x}, ${mesh.position.y}, ${mesh.position.z}`);
+        mesh.position.set(...obj.position);
+        mesh.layers.enableAll(); // Enable all layers for raycasting
+        this.scene.add(mesh);
+        console.log(`Added ${obj.type} at position: ${mesh.position.x}, ${mesh.position.y}, ${mesh.position.z}`);
 
-            // Ensure the layers property is defined
-            if (!mesh.layers) {
-                mesh.layers = new THREE.Layers();
-            }
-            mesh.layers.enableAll(); // Enable all layers for raycasting
-            console.log('Layers property:', mesh.layers);
-
-            this.objects.push(mesh);
+        if (!mesh.layers) {
+            mesh.layers = new THREE.Layers();
+            console.log('Layers property added:', mesh.layers);
         }
+
+        mesh.layers.enableAll();
+        this.objects.push(mesh);
+        console.log('Layers property:', mesh.layers);
     }
 
     loadLevelData(levelData) {
