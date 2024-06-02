@@ -79,6 +79,38 @@ export class EditorControlsManager {
             return;
         }
 
+        const direction = new THREE.Vector3();
+        const right = new THREE.Vector3();
+        const up = new THREE.Vector3(0, 1, 0);
+
+        this.camera.getWorldDirection(direction);
+        right.crossVectors(up, direction).normalize();
+
+        if (this.keys.w) {
+            this.camera.position.addScaledVector(direction, 0.1);
+        }
+        if (this.keys.s) {
+            this.camera.position.addScaledVector(direction, -0.1);
+        }
+        if (this.keys.a) {
+            this.camera.position.addScaledVector(right, 0.1);
+        }
+        if (this.keys.d) {
+            this.camera.position.addScaledVector(right, -0.1);
+        }
+        if (this.keys.space) {
+            this.camera.position.y += 0.1;
+        }
+        if (this.keys.c) {
+            this.camera.position.y -= 0.1;
+        }
+        if (this.keys.q) {
+            this.camera.rotation.y += 0.02;
+        }
+        if (this.keys.e) {
+            this.camera.rotation.y -= 0.02;
+        }
+
         this.camera.rotation.order = 'YXZ'; // Order of rotations: yaw (Y), pitch (X), roll (Z)
         this.camera.rotation.set(this.pitch, this.yaw, 0);
     }
@@ -87,38 +119,20 @@ export class EditorControlsManager {
 export class EditorLevelsManager {
     constructor(scene, camera, renderer) {
         this.scene = scene;
-        this.transformControls = null;
+        this.transformControls = new TransformControls(camera, renderer.domElement);
         this.camera = camera;
         this.renderer = renderer;
         this.objects = [];
         this.editMode = false;
+        this.objID = 0;
 
-        this.initTransformControls();
         this.scene.add(this.transformControls);
         this.renderer.domElement.addEventListener('click', (event) => this.onObjectClick(event), false);
     }
 
-    initTransformControls() {
-        this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
-        this.transformControls.addEventListener('change', () => {
-            if (this.transformControls.object) {
-                const position = this.transformControls.object.position;
-                console.log(`Object moved to position: ${position.x}, ${position.y}, ${position.z}`);
-                this.updateObjectPosition(this.transformControls.object);
-            }
-        });
-    }
-
-    updateObjectPosition(object) {
-        const obj = this.objects.find(o => o === object);
-        if (obj) {
-            obj.position.set(object.position.x, object.position.y, object.position.z);
-            console.log(`Updated object position: ${obj.position.x}, ${obj.position.y}, ${obj.position.z}`);
-        }
-    }
-
     onObjectClick(event) {
-        if (!this.editMode) return;
+        if (!this.editMode || !event.ctrlKey) return;
+
         const rect = this.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2(
             ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -128,20 +142,15 @@ export class EditorLevelsManager {
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, this.camera);
 
-        console.log('Mouse position:', mouse);
-
-        const intersects = raycaster.intersectObjects(this.objects, true).filter(obj => obj.object && obj.object.layers);
-
-        console.log('Intersects:', intersects);
+        const intersects = raycaster.intersectObjects(this.objects, true).filter(obj => obj.object && obj.object.layers !== undefined);
 
         if (intersects.length > 0) {
             const object = intersects[0].object;
-            console.log('Object clicked:', object);
-            console.log('Object properties:', object);
-            console.log('Object layers:', object.layers);
-            this.transformControls.attach(object);
-        } else {
-            console.log('No objects intersected');
+            if (this.transformControls.object === object) {
+                this.transformControls.detach();
+            } else {
+                this.transformControls.attach(object);
+            }
         }
     }
 
@@ -151,32 +160,33 @@ export class EditorLevelsManager {
             geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(...obj.position);
         } else if (obj.type === 'sphere') {
             geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(...obj.position);
         } else if (obj.type === 'ground') {
             geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(...obj.position);
         } else {
             console.error('Unsupported object type:', obj.type);
             return;
         }
 
-        mesh.position.set(...obj.position);
-        mesh.layers.enableAll(); // Enable all layers for raycasting
-        this.scene.add(mesh);
-        console.log(`Added ${obj.type} at position: ${mesh.position.x}, ${mesh.position.y}, ${mesh.position.z}`);
-
+        // Ensure the layers property is defined
         if (!mesh.layers) {
             mesh.layers = new THREE.Layers();
-            console.log('Layers property added:', mesh.layers);
         }
+        mesh.layers.enableAll(); // Enable all layers for raycasting
 
-        mesh.layers.enableAll();
+        // Assign a unique ID to the object
+        mesh.userData.objID = this.objID++;
+
+        this.scene.add(mesh);
         this.objects.push(mesh);
-        console.log('Layers property:', mesh.layers);
     }
 
     loadLevelData(levelData) {

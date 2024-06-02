@@ -89,10 +89,22 @@
             });
 
             document.getElementById('addCubeBtn').addEventListener('click', () => {
+                levelsManager.addObject({
+                    type: 'cube',
+                    size: [1, 1, 1],
+                    color: [1, 0, 0],
+                    position: [Math.random() * 5, Math.random() * 5, Math.random() * 5]
+                });
                 console.log('Add Cube button clicked');
             });
 
             document.getElementById('addSphereBtn').addEventListener('click', () => {
+                levelsManager.addObject({
+                    type: 'sphere',
+                    size: [0.5],
+                    color: [0, 0, 1],
+                    position: [Math.random() * 5, Math.random() * 5, Math.random() * 5]
+                });
                 console.log('Add Sphere button clicked');
             });
 

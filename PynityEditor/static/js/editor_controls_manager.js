@@ -66,6 +66,38 @@ export class EditorControlsManager {
             return;
         }
 
+        const direction = new THREE.Vector3();
+        const right = new THREE.Vector3();
+        const up = new THREE.Vector3(0, 1, 0);
+
+        this.camera.getWorldDirection(direction);
+        right.crossVectors(up, direction).normalize();
+
+        if (this.keys.w) {
+            this.camera.position.addScaledVector(direction, 0.1);
+        }
+        if (this.keys.s) {
+            this.camera.position.addScaledVector(direction, -0.1);
+        }
+        if (this.keys.a) {
+            this.camera.position.addScaledVector(right, -0.1);
+        }
+        if (this.keys.d) {
+            this.camera.position.addScaledVector(right, 0.1);
+        }
+        if (this.keys.space) {
+            this.camera.position.y += 0.1;
+        }
+        if (this.keys.c) {
+            this.camera.position.y -= 0.1;
+        }
+        if (this.keys.q) {
+            this.camera.rotation.y += 0.02;
+        }
+        if (this.keys.e) {
+            this.camera.rotation.y -= 0.02;
+        }
+
         this.camera.rotation.order = 'YXZ'; // Order of rotations: yaw (Y), pitch (X), roll (Z)
         this.camera.rotation.set(this.pitch, this.yaw, 0);
     }
