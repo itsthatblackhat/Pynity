@@ -1,4 +1,3 @@
-const TempEditorCameraManager = require('./editor_camera_manager');
 const TempEditorControlsManager = require('./editor_controls_manager');
 const TempEditorLevelsManager = require('./editor_levels_manager');
 

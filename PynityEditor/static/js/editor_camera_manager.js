@@ -1,4 +1,6 @@
-class TempEditorCameraManager {
+import * as THREE from './three.module.js';
+
+export class EditorCameraManager {
     constructor(fov, aspect, near, far, initialPosition) {
         this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera.position.set(...initialPosition);
@@ -9,5 +11,3 @@ class TempEditorCameraManager {
         return this.camera;
     }
 }
-
-module.exports = TempEditorCameraManager;

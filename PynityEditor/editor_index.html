@@ -5,49 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pynity Editor</title>
     <link rel="stylesheet" href="static/css/styles.css">
-    <script src="static/js/three.min.js"></script>
+    <script type="module" src="static/js/three.js"></script>
+    <script type="module" src="static/js/three.module.js"></script>
+    <script type="module" src="static/js/TransformControls.js"></script>
+    <script type="module" src="static/js/TransformControls.js"></script>
     <script type="module" src="static/js/editor_combined_manager.js"></script>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        #toolbar {
-            flex: 0 0 40px;
-            background-color: #2f3e56;
-            color: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-        #main {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-        #sidebar, #details {
-            flex: 0 0 200px;
-            background-color: #2f3e56;
-            color: #fff;
-            overflow-y: auto;
-        }
-        #viewport {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #fff;
-        }
-        #gameCanvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
 </head>
 <body>
     <div id="toolbar">
@@ -55,6 +17,7 @@
         <button id="loadBtn">Load</button>
         <button id="addCubeBtn">Add Cube</button>
         <button id="addSphereBtn">Add Sphere</button>
+        <button id="toggleEditModeBtn">Toggle Edit Mode</button>
     </div>
     <div id="main">
         <div id="sidebar">
@@ -69,10 +32,8 @@
         </div>
         <div id="details">
             <h2>Details</h2>
-            <!-- Details of selected object will go here -->
         </div>
     </div>
-    <script src="static/js/player_physics.js"></script>
     <script type="module">
         import { EditorCameraManager, EditorControlsManager, EditorLevelsManager } from './static/js/editor_combined_manager.js';
 
@@ -97,27 +58,20 @@
             const camera = cameraManager.getCamera();
             console.log('CameraManager initialized');
 
-            const levelsManager = new EditorLevelsManager(scene);
+            const levelsManager = new EditorLevelsManager(scene, camera, renderer);
             console.log('LevelsManager initialized');
 
             const controlsManager = new EditorControlsManager(camera);
             console.log('ControlsManager initialized');
 
-            // Add basic lighting to the scene
             const light = new THREE.DirectionalLight(0xffffff, 1);
             light.position.set(5, 5, 5).normalize();
             scene.add(light);
             console.log('Light added to the scene');
 
-            // Example level data to ensure something is rendered
-            const levelData = {
-                objects: [
-                    { type: 'cube', size: [1, 1, 1], color: [1, 0, 0], position: [0, 0, 0], name: 'Cube1' },
-                    { type: 'sphere', size: [1], color: [0, 1, 0], position: [2, 0, 0], name: 'Sphere1' }
-                ]
-            };
-
-            levelsManager.loadLevelData(levelData);
+            fetch('levels/universe.json')
+                .then(response => response.json())
+                .then(levelData => levelsManager.loadLevelData(levelData));
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -128,7 +82,6 @@
 
             animate();
 
-            // Event listeners for buttons
             document.getElementById('saveBtn').addEventListener('click', () => {
                 console.log('Save button clicked');
                 // Implement save logic
@@ -147,6 +100,10 @@
             document.getElementById('addSphereBtn').addEventListener('click', () => {
                 console.log('Add Sphere button clicked');
                 // Implement add sphere logic
+            });
+
+            document.getElementById('toggleEditModeBtn').addEventListener('click', () => {
+                levelsManager.toggleEditMode();
             });
         });
     </script>

@@ -1,4 +1,6 @@
-class TempEditorControlsManager {
+import * as THREE from './three.module.js';
+
+export class EditorControlsManager {
     constructor(camera) {
         this.camera = camera;
         this.keys = {
@@ -68,5 +70,3 @@ class TempEditorControlsManager {
         this.camera.rotation.set(this.pitch, this.yaw, 0);
     }
 }
-
-module.exports = TempEditorControlsManager;
