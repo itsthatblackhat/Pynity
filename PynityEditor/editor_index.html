@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pynity Editor</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <div id="toolbar">
+        <button id="saveBtn">Save</button>
+        <button id="loadBtn">Load</button>
+        <button id="addCubeBtn">Add Cube</button>
+        <button id="addSphereBtn">Add Sphere</button>
+    </div>
+    <div id="sidebar">
+        <h2>Assets</h2>
+        <ul>
+            <li>Cube</li>
+            <li>Sphere</li>
+        </ul>
+    </div>
+    <div id="details">
+        <h2>Details</h2>
+        <!-- Details of selected object will go here -->
+    </div>
+    <div id="asset-directory">
+        <h2>Asset Directory</h2>
+        <!-- Dynamically loaded asset files will be listed here -->
+    </div>
+    <div id="canvas-container" style="flex: 1;">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    <script src="static/js/three.min.js"></script>
+    <script src="static/js/editor_renderer.js"></script>
+</body>
+</html>
