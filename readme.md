@@ -40,9 +40,9 @@ Ensure you have the following installed on your system:
     ```
 
 ### Running the Application
-
-To start the application, run:
 ```bash
+To start the application, run:
+
 npm start
 
 # Directory Structure
