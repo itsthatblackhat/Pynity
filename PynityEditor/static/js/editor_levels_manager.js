@@ -1,21 +1,11 @@
 class EditorLevelsManager {
-    constructor(scene) {
+    constructor(scene, world) {
         this.scene = scene;
+        this.world = world;
     }
 
-    loadLevel(url) {
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                this.createScene(data);
-            })
-            .catch(error => {
-                console.error('Error loading level:', error);
-            });
-    }
-
-    createScene(data) {
-        data.objects.forEach(obj => {
+    loadLevelData(levelData) {
+        levelData.objects.forEach(obj => {
             let geometry, material, mesh;
             if (obj.type === 'cube') {
                 geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
@@ -30,6 +20,13 @@ class EditorLevelsManager {
                 mesh.position.set(...obj.position);
                 this.scene.add(mesh);
             }
+            console.log(`Added ${obj.type} named ${obj.name}`);
         });
     }
+
+    animate() {
+        // Placeholder for any animation logic if necessary
+    }
 }
+
+module.exports = EditorLevelsManager;

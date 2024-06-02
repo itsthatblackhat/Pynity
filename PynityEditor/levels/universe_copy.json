@@ -1,0 +1,50 @@
+{
+    "objects": [
+        {
+            "type": "cube",
+            "name": "Cube1",
+            "position": [1, 1, 1],
+            "size": [1, 1, 1],
+            "color": [1, 0, 0],
+            "mass": 1,
+            "collision": true
+        },
+        {
+            "type": "cube",
+            "name": "Cube2",
+            "position": [-1, -1, -1],
+            "size": [1, 1, 1],
+            "color": [0, 1, 0],
+            "mass": 1,
+            "collision": true
+        },
+        {
+            "type": "sphere",
+            "name": "Sphere1",
+            "position": [3, 1, -2],
+            "size": [0.5, 0.5, 0.5],
+            "color": [0, 0, 1],
+            "mass": 1,
+            "collision": true
+        },
+        {
+            "type": "sphere",
+            "name": "Sphere2",
+            "position": [-2, -3, 1],
+            "size": [0.5, 0.5, 0.5],
+            "color": [1, 1, 0],
+            "mass": 1,
+            "collision": true
+        },
+        {
+            "type": "ground",
+            "name": "Ground",
+            "position": [0, -5, 0],
+            "size": [100, 1, 100],
+            "color": [0.5, 0.5, 0.5],
+            "mass": -1,
+            "collision": true,
+            "fixed": true
+        }
+    ]
+}
