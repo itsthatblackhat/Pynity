@@ -1,4 +1,4 @@
-class EditorLevelsManager {
+class TempEditorLevelsManager {
     constructor(scene, world) {
         this.scene = scene;
         this.world = world;
@@ -29,4 +29,4 @@ class EditorLevelsManager {
     }
 }
 
-module.exports = EditorLevelsManager;
+module.exports = TempEditorLevelsManager;

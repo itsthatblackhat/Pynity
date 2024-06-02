@@ -1,4 +1,19 @@
-class TempEditorControlsManager {
+// editor_combined_manager.js
+
+export class EditorCameraManager {
+    constructor(fov, aspect, near, far, initialPosition) {
+        this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        this.camera.position.set(...initialPosition);
+        this.camera.lookAt(0, 0, 0); // Ensure the camera is looking at the center
+        console.log("Camera initialized at position:", this.camera.position);
+    }
+
+    getCamera() {
+        return this.camera;
+    }
+}
+
+export class EditorControlsManager {
     constructor(camera) {
         this.camera = camera;
         this.keys = {
@@ -69,4 +84,34 @@ class TempEditorControlsManager {
     }
 }
 
-module.exports = TempEditorControlsManager;
+export class EditorLevelsManager {
+    constructor(scene) {
+        this.scene = scene;
+    }
+
+    loadLevelData(levelData) {
+        levelData.objects.forEach(obj => {
+            let geometry, material, mesh;
+            if (obj.type === 'cube') {
+                geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
+                material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
+                mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(...obj.position);
+                this.scene.add(mesh);
+                console.log(`Added cube at position: ${mesh.position}`);
+            } else if (obj.type === 'sphere') {
+                geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
+                material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
+                mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(...obj.position);
+                this.scene.add(mesh);
+                console.log(`Added sphere at position: ${mesh.position}`);
+            }
+            console.log(`Added ${obj.type} named ${obj.name}`);
+        });
+    }
+
+    animate() {
+        // Placeholder for any animation logic if necessary
+    }
+}

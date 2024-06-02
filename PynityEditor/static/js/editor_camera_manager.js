@@ -1,4 +1,4 @@
-class EditorCameraManager {
+class TempEditorCameraManager {
     constructor(fov, aspect, near, far, initialPosition) {
         this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera.position.set(...initialPosition);
@@ -10,4 +10,4 @@ class EditorCameraManager {
     }
 }
 
-module.exports = EditorCameraManager;
+module.exports = TempEditorCameraManager;
