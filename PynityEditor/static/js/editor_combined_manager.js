@@ -124,7 +124,14 @@ export class EditorLevelsManager {
         this.renderer = renderer;
         this.objects = [];
         this.editMode = false;
-        this.gridHelper = null;
+
+        // PIXI.Application is now available globally
+        this.pixiApp = new PIXI.Application({
+            width: renderer.domElement.clientWidth,
+            height: renderer.domElement.clientHeight,
+            backgroundColor: 0x1099bb,
+            resolution: window.devicePixelRatio || 1,
+        });
 
         this.initTransformControls();
         this.scene.add(this.transformControls);
@@ -164,21 +171,17 @@ export class EditorLevelsManager {
 
         console.log('Mouse position:', mouse);
 
-        const intersects = raycaster.intersectObjects(this.objects, true).filter(obj => obj.object && obj.object.layers);
+        const intersects = raycaster.intersectObjects(this.objects, true);
 
         console.log('Intersects:', intersects);
 
         if (intersects.length > 0) {
             const object = intersects[0].object;
             console.log('Object clicked:', object);
-            console.log('Object properties:', object);
-            console.log('Object layers:', object.layers);
             if (this.transformControls.object === object) {
                 this.transformControls.detach();
-                this.clearDetails();
             } else {
                 this.transformControls.attach(object);
-                this.showDetails(object);
             }
         } else {
             console.log('No objects intersected');
@@ -186,39 +189,45 @@ export class EditorLevelsManager {
     }
 
     addObject(obj) {
-        let geometry, material, mesh;
+        let geometry, material, mesh, pixiSprite;
         if (obj.type === 'cube') {
             geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(...obj.position);
-            mesh.layers.enableAll(); // Enable all layers for raycasting
             this.scene.add(mesh);
             console.log(`Added cube at position: ${mesh.position}`);
+
+            pixiSprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
+            pixiSprite.tint = 0xff0000;
+            pixiSprite.width = obj.size[0] * 10;
+            pixiSprite.height = obj.size[1] * 10;
+            pixiSprite.position.set(obj.position[0] * 10, obj.position[1] * 10);
+            this.pixiApp.stage.addChild(pixiSprite);
+            console.log(`Added cube sprite at position: ${pixiSprite.position}`);
         } else if (obj.type === 'sphere') {
             geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(...obj.position);
-            mesh.layers.enableAll(); // Enable all layers for raycasting
             this.scene.add(mesh);
             console.log(`Added sphere at position: ${mesh.position}`);
+
+            pixiSprite = new PIXI.Graphics();
+            pixiSprite.beginFill(0x00ff00);
+            pixiSprite.drawCircle(0, 0, obj.size[0] * 10);
+            pixiSprite.endFill();
+            pixiSprite.position.set(obj.position[0] * 10, obj.position[1] * 10);
+            this.pixiApp.stage.addChild(pixiSprite);
+            console.log(`Added sphere sprite at position: ${pixiSprite.position}`);
         } else if (obj.type === 'ground') {
             geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(...obj.position);
-            mesh.layers.enableAll(); // Enable all layers for raycasting
             this.scene.add(mesh);
             console.log(`Added ground at position: ${mesh.position}`);
         }
-
-        // Ensure the layers property is defined
-        if (!mesh.layers) {
-            mesh.layers = new THREE.Layers();
-        }
-        mesh.layers.enableAll(); // Enable all layers for raycasting
-        console.log('Layers property:', mesh.layers);
 
         this.objects.push(mesh);
     }
@@ -233,26 +242,7 @@ export class EditorLevelsManager {
     }
 
     toggleGrid() {
-        if (this.gridHelper) {
-            this.scene.remove(this.gridHelper);
-            this.gridHelper = null;
-        } else {
-            this.gridHelper = new THREE.GridHelper(50, 50);
-            this.scene.add(this.gridHelper);
-        }
-    }
-
-    showDetails(object) {
-        const detailsContent = document.getElementById('detailsContent');
-        detailsContent.innerHTML = `
-            <p>Position: ${object.position.x.toFixed(2)}, ${object.position.y.toFixed(2)}, ${object.position.z.toFixed(2)}</p>
-            <p>Rotation: ${object.rotation.x.toFixed(2)}, ${object.rotation.y.toFixed(2)}, ${object.rotation.z.toFixed(2)}</p>
-            <p>Scale: ${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)}</p>
-        `;
-    }
-
-    clearDetails() {
-        const detailsContent = document.getElementById('detailsContent');
-        detailsContent.innerHTML = '';
+        // Toggle grid logic here
+        console.log("Grid toggled");
     }
 }

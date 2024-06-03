@@ -5,20 +5,20 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and parsed');
 
     const canvas = document.getElementById('gameCanvas');
-    const viewport = document.getElementById('viewport');
+    const canvasContainer = document.getElementById('canvas-container');
     const renderer = new THREE.WebGLRenderer({ canvas });
-    renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+    renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 
     window.addEventListener('resize', () => {
-        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
-        camera.aspect = viewport.clientWidth / viewport.clientHeight;
+        renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
         camera.updateProjectionMatrix();
     });
 
     const scene = new THREE.Scene();
     console.log('Scene initialized');
 
-    const cameraManager = new EditorCameraManager(75, viewport.clientWidth / viewport.clientHeight, 0.1, 1000, [0, 1.6, 5]);
+    const cameraManager = new EditorCameraManager(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000, [0, 1.6, 5]);
     const camera = cameraManager.getCamera();
     console.log('CameraManager initialized');
 
@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
         controlsManager.updateCamera();
         renderer.render(scene, camera);
+        levelsManager.pixiApp.render();  // Ensure PixiJS rendering is also called
     }
 
     animate();
@@ -54,26 +55,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('addCubeBtn').addEventListener('click', () => {
+        console.log('Add Cube button clicked');
         levelsManager.addObject({
             type: 'cube',
             size: [1, 1, 1],
             color: [1, 0, 0],
-            position: [Math.random() * 5, Math.random() * 5, Math.random() * 5]
+            position: [0, 0, 0]
         });
-        console.log('Add Cube button clicked');
     });
 
     document.getElementById('addSphereBtn').addEventListener('click', () => {
+        console.log('Add Sphere button clicked');
         levelsManager.addObject({
             type: 'sphere',
             size: [0.5],
-            color: [0, 0, 1],
-            position: [Math.random() * 5, Math.random() * 5, Math.random() * 5]
+            color: [0, 1, 0],
+            position: [2, 0, 0]
         });
-        console.log('Add Sphere button clicked');
     });
 
     document.getElementById('toggleEditModeBtn').addEventListener('click', () => {
         levelsManager.toggleEditMode();
+    });
+
+    document.getElementById('toggleGridBtn').addEventListener('click', () => {
+        levelsManager.toggleGrid();
     });
 });
