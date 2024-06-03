@@ -119,19 +119,38 @@ export class EditorControlsManager {
 export class EditorLevelsManager {
     constructor(scene, camera, renderer) {
         this.scene = scene;
-        this.transformControls = new TransformControls(camera, renderer.domElement);
+        this.transformControls = null;
         this.camera = camera;
         this.renderer = renderer;
         this.objects = [];
         this.editMode = false;
-        this.objID = 0;
 
+        this.initTransformControls();
         this.scene.add(this.transformControls);
         this.renderer.domElement.addEventListener('click', (event) => this.onObjectClick(event), false);
     }
 
+    initTransformControls() {
+        this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
+        this.transformControls.addEventListener('change', () => {
+            if (this.transformControls.object) {
+                const position = this.transformControls.object.position;
+                console.log(`Object moved to position: ${position.x}, ${position.y}, ${position.z}`);
+                this.updateObjectPosition(this.transformControls.object);
+            }
+        });
+    }
+
+    updateObjectPosition(object) {
+        const obj = this.objects.find(o => o === object);
+        if (obj) {
+            obj.position.set(object.position.x, object.position.y, object.position.z);
+            console.log(`Updated object position: ${obj.position.x}, ${obj.position.y}, ${obj.position.z}`);
+        }
+    }
+
     onObjectClick(event) {
-        if (!this.editMode || !event.ctrlKey) return;
+        if (!this.editMode || (!event.ctrlKey && !event.shiftKey)) return;
 
         const rect = this.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2(
@@ -142,15 +161,26 @@ export class EditorLevelsManager {
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, this.camera);
 
-        const intersects = raycaster.intersectObjects(this.objects, true).filter(obj => obj.object && obj.object.layers !== undefined);
+        console.log('Mouse position:', mouse);
+
+        const intersects = raycaster.intersectObjects(this.objects, true).filter(obj => obj.object && obj.object.layers);
+
+        console.log('Intersects:', intersects);
 
         if (intersects.length > 0) {
             const object = intersects[0].object;
-            if (this.transformControls.object === object) {
+            console.log('Object clicked:', object);
+            console.log('Object properties:', object);
+            console.log('Object layers:', object.layers);
+            if (event.shiftKey) {
+                this.transformControls.detach();
+            } else if (this.transformControls.object === object) {
                 this.transformControls.detach();
             } else {
                 this.transformControls.attach(object);
             }
+        } else {
+            console.log('No objects intersected');
         }
     }
 
@@ -161,19 +191,25 @@ export class EditorLevelsManager {
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(...obj.position);
+            mesh.layers.enableAll(); // Enable all layers for raycasting
+            this.scene.add(mesh);
+            console.log(`Added cube at position: ${mesh.position}`);
         } else if (obj.type === 'sphere') {
             geometry = new THREE.SphereGeometry(obj.size[0], 32, 32);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(...obj.position);
+            mesh.layers.enableAll(); // Enable all layers for raycasting
+            this.scene.add(mesh);
+            console.log(`Added sphere at position: ${mesh.position}`);
         } else if (obj.type === 'ground') {
             geometry = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
             material = new THREE.MeshBasicMaterial({ color: new THREE.Color(...obj.color) });
             mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(...obj.position);
-        } else {
-            console.error('Unsupported object type:', obj.type);
-            return;
+            mesh.layers.enableAll(); // Enable all layers for raycasting
+            this.scene.add(mesh);
+            console.log(`Added ground at position: ${mesh.position}`);
         }
 
         // Ensure the layers property is defined
@@ -181,11 +217,8 @@ export class EditorLevelsManager {
             mesh.layers = new THREE.Layers();
         }
         mesh.layers.enableAll(); // Enable all layers for raycasting
+        console.log('Layers property:', mesh.layers);
 
-        // Assign a unique ID to the object
-        mesh.userData.objID = this.objID++;
-
-        this.scene.add(mesh);
         this.objects.push(mesh);
     }
 

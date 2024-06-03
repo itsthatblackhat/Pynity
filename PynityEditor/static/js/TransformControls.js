@@ -92,6 +92,7 @@ class TransformControls extends THREE.Object3D {
         if (intersects.length > 0) {
             const intersection = intersects[0];
             this.axis = intersection.object.name;
+            this.dragging = true;
             this.dispatchEvent(this.mouseDownEvent);
         }
     }
@@ -112,14 +113,17 @@ class TransformControls extends THREE.Object3D {
         if (intersects.length > 0) {
             const intersection = intersects[0];
             const newPosition = intersection.point;
-            this.object.position.copy(newPosition);
-            this.dispatchEvent(this.changeEvent);
+            if (this.object) {
+                this.object.position.copy(newPosition);
+                this.dispatchEvent(this.changeEvent);
+            }
         }
     }
 
     onPointerUp(event) {
         if (!this.enabled || !this.dragging || !this.axis) return;
 
+        this.dragging = false;
         this.dispatchEvent(this.mouseUpEvent);
         this.axis = null;
     }
