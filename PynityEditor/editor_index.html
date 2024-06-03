@@ -90,10 +90,22 @@
 
             document.getElementById('addCubeBtn').addEventListener('click', () => {
                 console.log('Add Cube button clicked');
+                levelsManager.addObject({
+                    type: 'cube',
+                    size: [1, 1, 1],
+                    color: [1, 0, 0],
+                    position: [0, 0, 0]
+                });
             });
 
             document.getElementById('addSphereBtn').addEventListener('click', () => {
                 console.log('Add Sphere button clicked');
+                levelsManager.addObject({
+                    type: 'sphere',
+                    size: [0.5],
+                    color: [0, 1, 0],
+                    position: [2, 0, 0]
+                });
             });
 
             document.getElementById('toggleEditModeBtn').addEventListener('click', () => {

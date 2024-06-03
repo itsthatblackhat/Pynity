@@ -150,7 +150,7 @@ export class EditorLevelsManager {
     }
 
     onObjectClick(event) {
-        if (!this.editMode || (!event.ctrlKey && !event.shiftKey)) return;
+        if (!this.editMode || !event.ctrlKey) return;
 
         const rect = this.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2(
@@ -172,9 +172,7 @@ export class EditorLevelsManager {
             console.log('Object clicked:', object);
             console.log('Object properties:', object);
             console.log('Object layers:', object.layers);
-            if (event.shiftKey) {
-                this.transformControls.detach();
-            } else if (this.transformControls.object === object) {
+            if (this.transformControls.object === object) {
                 this.transformControls.detach();
             } else {
                 this.transformControls.attach(object);

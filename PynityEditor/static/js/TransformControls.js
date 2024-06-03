@@ -39,6 +39,7 @@ class TransformControls extends THREE.Object3D {
     attach(object) {
         this.object = object;
         this.visible = true;
+        this.updateGizmoPosition();
         this.dispatchEvent({ type: 'change' });
     }
 
@@ -48,8 +49,20 @@ class TransformControls extends THREE.Object3D {
         this.dispatchEvent({ type: 'change' });
     }
 
+    updateGizmoPosition() {
+        if (this.object) {
+            this.position.copy(this.object.position);
+            this.scale.set(
+                this.object.scale.x + 0.2,
+                this.object.scale.y + 0.2,
+                this.object.scale.z + 0.2
+            );
+        }
+    }
+
     updateMatrixWorld(force) {
         if (this.object) {
+            this.updateGizmoPosition();
             this.object.updateMatrixWorld();
         }
         super.updateMatrixWorld(force);
@@ -92,7 +105,6 @@ class TransformControls extends THREE.Object3D {
         if (intersects.length > 0) {
             const intersection = intersects[0];
             this.axis = intersection.object.name;
-            this.dragging = true;
             this.dispatchEvent(this.mouseDownEvent);
         }
     }
@@ -113,17 +125,15 @@ class TransformControls extends THREE.Object3D {
         if (intersects.length > 0) {
             const intersection = intersects[0];
             const newPosition = intersection.point;
-            if (this.object) {
-                this.object.position.copy(newPosition);
-                this.dispatchEvent(this.changeEvent);
-            }
+            this.object.position.copy(newPosition);
+            this.updateGizmoPosition();
+            this.dispatchEvent(this.changeEvent);
         }
     }
 
     onPointerUp(event) {
         if (!this.enabled || !this.dragging || !this.axis) return;
 
-        this.dragging = false;
         this.dispatchEvent(this.mouseUpEvent);
         this.axis = null;
     }
