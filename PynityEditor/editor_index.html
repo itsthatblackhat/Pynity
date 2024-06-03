@@ -17,21 +17,21 @@
         <button id="addCubeBtn">Add Cube</button>
         <button id="addSphereBtn">Add Sphere</button>
         <button id="toggleEditModeBtn">Toggle Edit Mode</button>
+        <button id="toggleGridBtn">Toggle Grid</button>
     </div>
-    <div id="main">
-        <div id="sidebar">
-            <h2>Assets</h2>
-            <ul>
-                <li>Cube</li>
-                <li>Sphere</li>
-            </ul>
-        </div>
-        <div id="viewport">
-            <canvas id="gameCanvas"></canvas>
-        </div>
-        <div id="details">
-            <h2>Details</h2>
-        </div>
+    <div id="sidebar">
+        <h2>Assets</h2>
+        <ul>
+            <li>Cube</li>
+            <li>Sphere</li>
+        </ul>
+    </div>
+    <div id="details">
+        <h2>Details</h2>
+        <div id="detailsContent"></div>
+    </div>
+    <div id="canvas-container">
+        <canvas id="gameCanvas"></canvas>
     </div>
     <script type="module">
         import { EditorCameraManager, EditorControlsManager, EditorLevelsManager } from './static/js/editor_combined_manager.js';
@@ -40,20 +40,20 @@
             console.log('DOM fully loaded and parsed');
 
             const canvas = document.getElementById('gameCanvas');
-            const viewport = document.getElementById('viewport');
+            const canvasContainer = document.getElementById('canvas-container');
             const renderer = new THREE.WebGLRenderer({ canvas });
-            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+            renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 
             window.addEventListener('resize', () => {
-                renderer.setSize(viewport.clientWidth, viewport.clientHeight);
-                camera.aspect = viewport.clientWidth / viewport.clientHeight;
+                renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+                camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
                 camera.updateProjectionMatrix();
             });
 
             const scene = new THREE.Scene();
             console.log('Scene initialized');
 
-            const cameraManager = new EditorCameraManager(75, viewport.clientWidth / viewport.clientHeight, 0.1, 1000, [0, 1.6, 5]);
+            const cameraManager = new EditorCameraManager(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000, [0, 1.6, 5]);
             const camera = cameraManager.getCamera();
             console.log('CameraManager initialized');
 
@@ -110,6 +110,10 @@
 
             document.getElementById('toggleEditModeBtn').addEventListener('click', () => {
                 levelsManager.toggleEditMode();
+            });
+
+            document.getElementById('toggleGridBtn').addEventListener('click', () => {
+                levelsManager.toggleGrid();
             });
         });
     </script>

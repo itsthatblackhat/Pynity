@@ -124,6 +124,7 @@ export class EditorLevelsManager {
         this.renderer = renderer;
         this.objects = [];
         this.editMode = false;
+        this.gridHelper = null;
 
         this.initTransformControls();
         this.scene.add(this.transformControls);
@@ -174,8 +175,10 @@ export class EditorLevelsManager {
             console.log('Object layers:', object.layers);
             if (this.transformControls.object === object) {
                 this.transformControls.detach();
+                this.clearDetails();
             } else {
                 this.transformControls.attach(object);
+                this.showDetails(object);
             }
         } else {
             console.log('No objects intersected');
@@ -227,5 +230,29 @@ export class EditorLevelsManager {
     toggleEditMode() {
         this.editMode = !this.editMode;
         console.log(`Edit mode: ${this.editMode}`);
+    }
+
+    toggleGrid() {
+        if (this.gridHelper) {
+            this.scene.remove(this.gridHelper);
+            this.gridHelper = null;
+        } else {
+            this.gridHelper = new THREE.GridHelper(50, 50);
+            this.scene.add(this.gridHelper);
+        }
+    }
+
+    showDetails(object) {
+        const detailsContent = document.getElementById('detailsContent');
+        detailsContent.innerHTML = `
+            <p>Position: ${object.position.x.toFixed(2)}, ${object.position.y.toFixed(2)}, ${object.position.z.toFixed(2)}</p>
+            <p>Rotation: ${object.rotation.x.toFixed(2)}, ${object.rotation.y.toFixed(2)}, ${object.rotation.z.toFixed(2)}</p>
+            <p>Scale: ${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)}</p>
+        `;
+    }
+
+    clearDetails() {
+        const detailsContent = document.getElementById('detailsContent');
+        detailsContent.innerHTML = '';
     }
 }

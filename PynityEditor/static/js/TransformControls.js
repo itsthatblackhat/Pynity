@@ -52,11 +52,9 @@ class TransformControls extends THREE.Object3D {
     updateGizmoPosition() {
         if (this.object) {
             this.position.copy(this.object.position);
-            this.scale.set(
-                this.object.scale.x + 0.2,
-                this.object.scale.y + 0.2,
-                this.object.scale.z + 0.2
-            );
+            const boundingBox = new THREE.Box3().setFromObject(this.object);
+            const size = boundingBox.getSize(new THREE.Vector3());
+            this.scale.set(size.x + 0.2, size.y + 0.2, size.z + 0.2);
         }
     }
 
@@ -105,12 +103,18 @@ class TransformControls extends THREE.Object3D {
         if (intersects.length > 0) {
             const intersection = intersects[0];
             this.axis = intersection.object.name;
+            this.dragging = true;
             this.dispatchEvent(this.mouseDownEvent);
         }
     }
 
     onPointerMove(event) {
         if (!this.enabled || !this.dragging || !this.axis) return;
+
+        if (!this.object) {
+            console.error('No object is selected');
+            return;
+        }
 
         const pointer = event.changedTouches ? event.changedTouches[0] : event;
         const rect = this.domElement.getBoundingClientRect();
@@ -134,6 +138,7 @@ class TransformControls extends THREE.Object3D {
     onPointerUp(event) {
         if (!this.enabled || !this.dragging || !this.axis) return;
 
+        this.dragging = false;
         this.dispatchEvent(this.mouseUpEvent);
         this.axis = null;
     }
