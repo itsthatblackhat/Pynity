@@ -12,7 +12,7 @@ Pynity is a powerful 3D editor built using Electron and Three.js. It provides a 
 
 ## Directory Structure
 
-\```
+```
 D:\PYNITY\PYNITY
 ├───.idea
 │   └───inspectionProfiles
@@ -39,7 +39,7 @@ D:\PYNITY\PYNITY
 │   ├───css
 │   └───js
 └───templates
-\```
+```
 
 ## Running the Pynity Editor
 
