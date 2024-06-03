@@ -49,21 +49,21 @@ To run the Pynity Editor, follow these steps:
 
 2. **Navigate to the PynityEditor directory**: Open PowerShell and navigate to the PynityEditor directory.
 
-   \```
+   ```
    cd D:\PYNITY\PYNITY\PynityEditor
-   \```
+   ```
 
 3. **Install dependencies**: Run the following command to install the necessary dependencies.
 
-   \```
+   ```
    npm install
-   \```
+   ```
 
 4. **Run the editor**: Use npx to run the Electron application.
 
-   \```
+   ```
    npx electron .
-   \```
+   ```
 
 ## Project Structure
 
@@ -115,11 +115,3 @@ The main canvas in the center is where the 3D scene is rendered. You can interac
 ## Development
 
 The Pynity Editor is built using modern JavaScript technologies such as Electron and Three.js. Contributions to the project are welcome. To get started with development, clone the repository and follow the instructions above to run the editor.
-
-## License
-
-Pynity is released under the MIT License.
-
-For more information, visit the [official website](https://example.com).
-
-\```
