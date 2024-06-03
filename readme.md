@@ -1,102 +1,125 @@
-# Pynity Editor
+# Pynity
 
-Pynity Editor is a 3D editor application built using Electron and Three.js. The editor allows users to create and manipulate 3D objects in a scene with an intuitive user interface.
+Pynity is a powerful 3D editor built using Electron and Three.js. It provides a comprehensive environment for creating and managing 3D scenes, objects, and their properties. The Pynity Editor offers a user-friendly interface and a set of tools to manipulate 3D objects with ease.
 
 ## Features
 
-- **Camera Management**: Easily control the camera's position and perspective.
-- **Object Controls**: Add, move, and manipulate 3D objects (cubes and spheres) within the scene.
-- **Level Management**: Load and save levels, preserving the current state of the scene.
-- **Responsive Design**: The editor's layout adjusts to fit different screen sizes, ensuring a seamless user experience.
-- **Physics Integration**: Basic physics simulation using the CANNON.js library.
+- **3D Scene Management**: Create, load, and save 3D scenes.
+- **Object Manipulation**: Add, move, rotate, and scale 3D objects.
+- **Grid Toggling**: Display a grid to assist with object alignment.
+- **Edit Mode**: Switch between different editing modes.
+- **Details Panel**: View and edit the properties of selected objects.
 
-## Getting Started
-(to run the editor gui run the following from the PynityEditor dir in powershell)
-npx electron .
+## Directory Structure
 
+\```
+D:\PYNITY\PYNITY
+├───.idea
+│   └───inspectionProfiles
+├───.venv
+│   ├───Lib
+│   │   └───site-packages
+│   ├───Scripts
+├───build
+│   └───PynityEditor
+├───dist
+├───levels
+├───PynityEditor
+│   ├───assets
+│   ├───build
+│   │   └───PynityEditor
+│   │       └───localpycs
+│   ├───dist
+│   ├───levels
+│   ├───node_modules
+│   └───static
+│       ├───css
+│       └───js
+├───static
+│   ├───css
+│   └───js
+└───templates
+\```
 
-### Prerequisites
+## Running the Pynity Editor
 
-Ensure you have the following installed on your system:
+To run the Pynity Editor, follow these steps:
 
-- Node.js
-- npm (Node Package Manager)
+1. **Ensure you have Node.js installed**: The Pynity Editor relies on Node.js and npm. You can download and install Node.js from [nodejs.org](https://nodejs.org/).
 
-### Installation
+2. **Navigate to the PynityEditor directory**: Open PowerShell and navigate to the PynityEditor directory.
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/pynity-editor.git
-    ```
+   \```
+   cd D:\PYNITY\PYNITY\PynityEditor
+   \```
 
-2. Navigate to the project directory:
-    ```bash
-    cd pynity-editor
-    ```
+3. **Install dependencies**: Run the following command to install the necessary dependencies.
 
-3. Install the dependencies:
-    ```bash
-    npm install
-    ```
+   \```
+   npm install
+   \```
 
-### Running the Application
-```bash
-To start the application, run:
+4. **Run the editor**: Use npx to run the Electron application.
 
-npm start
+   \```
+   npx electron .
+   \```
 
-# Directory Structure
-pynity-editor/
-├── assets/
-├── build/
-├── dist/
-├── node_modules/
-├── static/
-│   ├── css/
-│   │   └── styles.css
-│   ├── js/
-│   │   ├── editor_combined_manager.js
-│   │   ├── player_physics.js
-│   │   ├── three.min.js
-│   │   └── other js files...
-├── editor_index.html
-├── main.js
-├── package.json
-└── README.md
+## Project Structure
 
+### PynityEditor Directory
 
-## File Overview
+- **assets**: Contains assets used in the editor.
+- **build**: Directory for build artifacts.
+- **dist**: Distribution directory for packaged application.
+- **levels**: Directory to store level data (scenes).
+- **node_modules**: Contains Node.js modules.
+- **static**: Static files such as CSS and JavaScript.
 
-- **assets/**: Contains static assets for the editor.
-- **build/**: Build directory for the application.
-- **dist/**: Distribution directory for packaged builds.
-- **node_modules/**: Directory containing Node.js modules.
-- **static/**: Contains static files like CSS and JavaScript.
-  - **css/styles.css**: Stylesheet for the application.
-  - **js/editor_combined_manager.js**: Main JavaScript file combining camera, controls, and levels management.
-  - **js/player_physics.js**: Physics module for player movement.
-  - **js/three.min.js**: Three.js library.
-- **editor_index.html**: Main HTML file for the editor.
-- **main.js**: Main process file for Electron.
-- **package.json**: Project configuration and dependencies.
-- **README.md**: This file.
+### Static Directory
 
-## Usage
+- **css**: Stylesheets for the editor.
+- **js**: JavaScript files for the editor functionality.
 
-### Camera Controls
+## Editor Usage
 
-- **W/A/S/D**: Move the camera forward, left, backward, and right.
-- **Mouse Drag**: Rotate the camera around the scene.
-- **Q/E**: Rotate the camera left and right.
+### Toolbar
 
-### Adding Objects
+The toolbar at the top provides buttons for various actions:
 
-- **Add Cube**: Adds a cube to the scene.
-- **Add Sphere**: Adds a sphere to the scene.
+- **Save**: Save the current scene.
+- **Load**: Load a scene.
+- **Add Cube**: Add a cube to the scene.
+- **Add Sphere**: Add a sphere to the scene.
+- **Toggle Edit Mode**: Switch between edit and view modes.
+- **Toggle Grid**: Show or hide the grid.
 
-### Saving and Loading Levels
+### Sidebar
 
-- **Save**: Saves the current state of the scene to a file.
-- **Load**: Loads a previously saved scene from a file.
+The sidebar on the left displays the list of available assets such as cubes and spheres.
 
+### Details Panel
 
+The details panel on the right shows the properties of the selected object. You can view and edit the position, rotation, and scale of the object.
+
+### Canvas
+
+The main canvas in the center is where the 3D scene is rendered. You can interact with the objects in the scene using the mouse and keyboard.
+
+### Controls
+
+- **WASD**: Move the camera.
+- **Mouse Drag**: Rotate the camera.
+- **Ctrl + Click**: Select and manipulate objects.
+
+## Development
+
+The Pynity Editor is built using modern JavaScript technologies such as Electron and Three.js. Contributions to the project are welcome. To get started with development, clone the repository and follow the instructions above to run the editor.
+
+## License
+
+Pynity is released under the MIT License.
+
+For more information, visit the [official website](https://example.com).
+
+\```
